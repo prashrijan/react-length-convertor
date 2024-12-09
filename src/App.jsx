@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./App.css";
 import InputField from "./Components/InputField";
 
 function App() {
-  const [fromLength, setFromLength] = useState("Foot");
-  const [toLength, setToLength] = useState("Foot");
-  const [inputValue, setInputValue] = useState("");
-  const [result, setResult] = useState("");
+  // const [fromLength, setFromLength] = useState("Meter");
+  // const [toLength, setToLength] = useState("Centimeter");
+
+  const fromRef = useRef("");
+  const toRef = useRef("");
+
+  const inputRef = useRef();
+  const resultRef = useRef();
 
   const convertLength = (from, to, inputVal) => {
     let map = {
@@ -19,7 +23,6 @@ function App() {
     if (map.hasOwnProperty(from) && map.hasOwnProperty(to)) {
       let valInCm = inputVal * map[from];
 
-      console.log(valInCm);
       return valInCm / map[to];
     }
 
@@ -27,30 +30,33 @@ function App() {
   };
 
   const handleLengthCalculation = (e) => {
-    const { value } = e.target;
-    setInputValue(value);
-    let outputValue = convertLength(fromLength, toLength, value);
-    setResult(outputValue);
+    let outputValue = convertLength(
+      fromRef.current.value,
+      toRef.current.value,
+      inputRef.current.value
+    );
+    resultRef.current.value = outputValue;
   };
 
   return (
     <div className="flex flex-col gap-8 h-screen bg-slate-200 items-center justify-center">
-      <h2 className="text-3xl font-bold">Length Convertor</h2>
+      <h2 className="text-3xl font-bold text-center">Length Convertor</h2>
 
-      <div className="flex flex-col w-1/4 gap-2">
+      <div className="flex flex-col w-full md:w-1/4 gap-2 px-5">
         <InputField
+          defaultSelect="Meter"
+          selectReference={fromRef}
+          reference={inputRef}
           label="From"
-          value={inputValue}
-          changeDropDownValue={setFromLength}
           onchange={handleLengthCalculation}
-          dropDownValue={fromLength}
         />
         <InputField
+          defaultSelect="Centimeter"
+          selectReference={toRef}
+          reference={resultRef}
           label="To"
-          value={result}
           disable="true"
-          changeDropDownValue={setToLength}
-          dropDownValue={toLength}
+          onchange={handleLengthCalculation}
         />
       </div>
 
